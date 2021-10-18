@@ -1,0 +1,8 @@
+.form {
+  display: inline-grid;
+}
+
+.btnForm {
+  font-size: 16px;
+  font-weight: 700;
+}

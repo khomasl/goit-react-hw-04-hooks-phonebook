@@ -1,68 +1,62 @@
-import { Component } from 'react'
+import { useState, useCallback } from 'react'
 import { v4 as uuid } from 'uuid'
 import s from './ContactForm.module.css'
 
-const INITIAL_STATE = {
-  name: '',
-  number: '',
-}
-export class ContactForm extends Component {
-  nameId = uuid()
-  numberId = uuid()
+export default function ContactForm({ addNewContact }) {
+  let nameId = uuid()
+  let numberId = uuid()
 
-  state = { ...INITIAL_STATE }
+  const [name, setName] = useState('')
+  const [number, setNumber] = useState('')
 
-  handleChange = (e) => {
-    const { name, value } = e.target
-    this.setState({
-      [name]: value,
-    })
-  }
+  const handleChange = useCallback(
+    (e) => {
+      const { name, value } = e.target
+      name === 'name' ? setName(value) : setNumber(value)
+    },
+    [name, number],
+  )
 
-  handleSubmit = (e) => {
-    e.preventDefault()
-    const { name, number } = this.state
-    const id = uuid()
-    this.props.addNewContact({ id, name, number })
-    this.resetForm()
-  }
+  const handleSubmit = useCallback(
+    (e) => {
+      e.preventDefault()
+      const id = uuid()
+      addNewContact({ id, name, number })
+      setName('')
+      setNumber('')
+    },
+    [name, number],
+  )
 
-  resetForm = () => this.setState({ ...INITIAL_STATE })
+  return (
+    <form className={s.form} onSubmit={handleSubmit}>
+      <label htmlFor={nameId}>Name</label>
+      <input
+        type="text"
+        name="name"
+        id={nameId}
+        value={name}
+        onChange={handleChange}
+        pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+        title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
+        required
+      />
 
-  render() {
-    const { name, number } = this.state
-    const { handleChange, handleSubmit, nameId, numberId } = this
+      <label htmlFor={numberId}>Number</label>
+      <input
+        type="tel"
+        name="number"
+        id={numberId}
+        value={number}
+        onChange={handleChange}
+        pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+        title="Номер телефона должен состоять из цифр и может содержать пробелы, тире, круглые скобки и может начинаться с +"
+        required
+      />
 
-    return (
-      <form className={s.form} onSubmit={handleSubmit}>
-        <label htmlFor={nameId}>Name</label>
-        <input
-          type="text"
-          name="name"
-          id={nameId}
-          value={name}
-          onChange={handleChange}
-          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-          title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
-          required
-        />
-
-        <label htmlFor={numberId}>Number</label>
-        <input
-          type="tel"
-          name="number"
-          id={numberId}
-          value={number}
-          onChange={handleChange}
-          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-          title="Номер телефона должен состоять из цифр и может содержать пробелы, тире, круглые скобки и может начинаться с +"
-          required
-        />
-
-        <button className={s.btnForm} type="submit">
-          Add contact
-        </button>
-      </form>
-    )
-  }
+      <button className={s.btnForm} type="submit">
+        Add contact
+      </button>
+    </form>
+  )
 }

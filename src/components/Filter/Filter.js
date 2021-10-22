@@ -1,9 +1,9 @@
 import { v4 as uuid } from 'uuid'
 import s from './Filter.module.css'
 
-export function Filter({ newFilter }) {
+export default function Filter({ newFilter }) {
   const findNameId = uuid()
-  const handleFilter = (e) => newFilter(e.target.value)
+  const handleFilter = (e) => newFilter(e.target.value.toLowerCase())
 
   return (
     <div className={s.contacts}>
